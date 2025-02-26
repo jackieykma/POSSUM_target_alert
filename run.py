@@ -17,7 +17,7 @@ Will need to write brief documentation here
 
 def main(args):
    ## Save output channel name
-   out_channel = args.channel
+   out_channel_list = args.channel.split(',')
    del args.channel
    ## Move to correct working directory
    os.chdir('POSSUM')
@@ -176,27 +176,30 @@ def main(args):
       f.write(entry[0]+','+entry[1]+','+entry[2]+','+entry[3]+','+entry[4]+','+entry[5]+'\n')
    f.close()
 
-   ## Print out results --- either to Terminal (as test), or via Slack bot
-   ## In other words: Edit below if you want the results reported in some other ways
-   #print(output_text)
-   ## Below for posting on Slack
-   slack_token = os.environ['SLACK_TOKEN']
-   from slack_sdk import WebClient
-   client = WebClient(token=slack_token)
-
-   client.chat_postMessage(
-      channel=out_channel, 
-      text=output_text, 
-      username="POSSUM Source Tracker"
-   )
+   for out_channel in out_channel_list:
+      if out_channel == 'terminal':
+         ## Print out results --- either to Terminal (as test), or via Slack bot
+         ## In other words: Edit below if you want the results reported in some other ways
+         print(output_text)
+      else:
+         ## Below for posting on Slack
+         slack_token = os.environ['SLACK_TOKEN']
+         from slack_sdk import WebClient
+         client = WebClient(token=slack_token)
+      
+         client.chat_postMessage(
+            channel=out_channel, 
+            text=output_text, 
+            username="POSSUM Source Tracker"
+         )
 
 
 
 if __name__ == '__main__':
    parser = argparse.ArgumentParser(description=docstring, formatter_class=argparse.RawDescriptionHelpFormatter)
    parser.add_argument('file_path', type=str, help='Path to the text file containing coordinates in each row.')
-   parser.add_argument('-o', '--output', type=str, help='Output file used to track which targets have previously been observed')
-   parser.add_argument('-c', '--channel', type=str, help='Destination Slack channel name.')
+   parser.add_argument('-o', '--output', type=str, help='Output CSV file used to track which targets have previously been observed')
+   parser.add_argument('-c', '--channel', type=str, help='Destination Slack channel name. Use member ID for Slack DM. Use "terminal" for output to Unix terminal. For sending to multiple channels, provide a comma-separated list (e.g. -c channel1,channel2)')
       
    args = parser.parse_args()
    main(args)
