@@ -21,4 +21,10 @@ The above command downloads this `POSSUM_target_alert` script, as well as the `P
 
 
 
-## ...
+## Other useful information
+
+A good resource for setting up a Slack message bot: 
+
+https://www.datacamp.com/tutorial/how-to-send-slack-messages-with-python
+
+https://api.slack.com/methods/chat.postMessage

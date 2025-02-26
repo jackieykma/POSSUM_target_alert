@@ -100,7 +100,8 @@ def main(args):
       band2_hist = np.array([[None]*6])
    
    
-   output_text = '🔮 POSSUM target-based tracking report 🔮\n\n'
+   output_text = '🔮 POSSUM target-based tracking report 🔮\n'
+   output_text += 'Input target list: '+args.file_path.split('/')[-1]+'\n\n'
    ## Go through each observed field, report if previously unobserved
    output_text += '1️⃣  ✅ New Band 1 observed targets:\n'
    any_observed_band1, any_observed_band2 = False, False ## Track if any has already been found as observed
@@ -173,10 +174,26 @@ def main(args):
    f.close()
 
    ## Print out results --- either to Terminal (as test), or via Slack bot
-   print(output_text)
-
-
-
+   ## In other words: Edit below if you want the results reported in some other ways
+   #print(output_text)
+   ## Below for posting on Slack
+   slack_token = os.environ['SLACK_TOKEN']
+   from slack_sdk import WebClient
+   client = WebClient(token=slack_token)
+   ## For sending to a Slack channel
+   client.chat_postMessage(
+      channel="bot_messages", 
+      text=output_text, 
+      username="POSSUM Source Tracker"
+   )
+   '''
+   ## For sending private message
+   client.chat_postMessage(
+      channel="UD1HLA5SL",
+      text=output_text,
+      username="POSSUM Source Tracker"
+   )
+   '''
 
 
 
