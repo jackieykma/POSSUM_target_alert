@@ -16,6 +16,9 @@ Will need to write brief documentation here
 
 
 def main(args):
+   ## Save output channel name
+   out_channel = args.channel
+   del args.channel
    ## Move to correct working directory
    os.chdir('POSSUM')
    if args.file_path[0] != '/':
@@ -180,20 +183,12 @@ def main(args):
    slack_token = os.environ['SLACK_TOKEN']
    from slack_sdk import WebClient
    client = WebClient(token=slack_token)
-   ## For sending to a Slack channel
+
    client.chat_postMessage(
-      channel="bot_messages", 
+      channel=out_channel, 
       text=output_text, 
       username="POSSUM Source Tracker"
    )
-   '''
-   ## For sending private message
-   client.chat_postMessage(
-      channel="UD1HLA5SL",
-      text=output_text,
-      username="POSSUM Source Tracker"
-   )
-   '''
 
 
 
@@ -201,6 +196,7 @@ if __name__ == '__main__':
    parser = argparse.ArgumentParser(description=docstring, formatter_class=argparse.RawDescriptionHelpFormatter)
    parser.add_argument('file_path', type=str, help='Path to the text file containing coordinates in each row.')
    parser.add_argument('-o', '--output', type=str, help='Output file used to track which targets have previously been observed')
+   parser.add_argument('-c', '--channel', type=str, help='Destination Slack channel name.')
       
    args = parser.parse_args()
    main(args)
