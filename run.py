@@ -3,7 +3,7 @@ import os
 import sys
 import argparse
 import numpy as np
-import POSSUM.covered_by_POSSUM as cbp
+import POSSUM.survey_coverage.covered_by_POSSUM as cbp
 
 
 
@@ -20,15 +20,15 @@ def main(args):
    out_channel_list = args.channel.split(',')
    del args.channel
    ## Move to correct working directory
-   os.chdir('POSSUM')
+   os.chdir('POSSUM/survey_coverage')
    if args.file_path[0] != '/':
       ## If relative path, correct path after chdir
-      args.file_path = '../'+args.file_path
+      args.file_path = '../../'+args.file_path
    ## Save the path to output file, and remove from args
    output_path = args.output
    del args.output
    if output_path[0] != '/':
-      output_path = '../'+output_path
+      output_path = '../../'+output_path
    
    
    ## Redirect print output to string
@@ -59,10 +59,11 @@ def main(args):
          src_name = band1_output[src_idx-1]
          src_name = src_name.split('location ')[-1][:-3]
          i = 1 ## Read line-by-line for observed tiles
-         while band1_output[src_idx+i] != '':
+         while band1_output[src_idx+i][0:7] != 'Belongs':
             sbid_info = band1_output[src_idx+i].split(', ')
             i += 1
             ## Unpack everything
+            print(sbid_info)
             tile = sbid_info[0][7:]
             sbid = sbid_info[1][7:].split('.')[0] ## Remove trailing ".0"
             beamno = sbid_info[2][10:]
@@ -76,7 +77,7 @@ def main(args):
          src_name = band2_output[src_idx-1]
          src_name = src_name.split('location ')[-1][:-3]
          i = 1 ## Read line-by-line for observed tiles
-         while band2_output[src_idx+i] != '':
+         while band2_output[src_idx+i][0:7] != 'Belongs':
             sbid_info = band2_output[src_idx+i].split(', ')
             i += 1
             ## Unpack everything
@@ -154,6 +155,7 @@ def main(args):
       elif np.any(np.all(np.isin(band1_obs, band1_list), axis=0)) == False:
          if any_removed_band1 == False:
             output_text += '1️⃣  ‼️  Removed Band 1 observed target:\n'
+            any_removed_band1 = True
          output_text += 'Src: '+band1_obs[1]+' | Removed SBID: '+band1_obs[3]+' | Tile: '+band1_obs[2]+'\n'
    if any_removed_band1 == True:
       output_text += '\n'
@@ -163,6 +165,7 @@ def main(args):
       elif np.any(np.all(np.isin(band2_obs, band2_list), axis=0)) == False:
          if any_removed_band2 == False:
             output_text += '2️⃣  ‼️  Removed Band 2 observed target:\n'
+            any_removed_band2 = True
          output_text += 'Src: '+band2_obs[1]+' | Removed SBID: '+band2_obs[3]+' | Tile: '+band2_obs[2]+'\n'
    if any_removed_band2 == True:
       output_text += '\n'
