@@ -63,7 +63,6 @@ def main(args):
             sbid_info = band1_output[src_idx+i].split(', ')
             i += 1
             ## Unpack everything
-            print(sbid_info)
             tile = sbid_info[0][7:]
             sbid = sbid_info[1][7:].split('.')[0] ## Remove trailing ".0"
             beamno = sbid_info[2][10:]
